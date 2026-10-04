@@ -1,15 +1,17 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 import {
   USER_LOGIN_REQUEST, USER_LOGIN_SUCCESS, USER_LOGIN_FAIL, USER_LOGOUT,
   USER_REGISTER_REQUEST, USER_REGISTER_SUCCESS, USER_REGISTER_FAIL,
   USER_DETAILS_REQUEST, USER_DETAILS_SUCCESS, USER_DETAILS_FAIL,
 } from '../constants/userConstants';
 
+const API = (import.meta.env.VITE_API_URL || '') + '/api';
+
 export const login = (email, password) => async (dispatch) => {
   try {
     dispatch({ type: USER_LOGIN_REQUEST });
     const config = { headers: { 'Content-Type': 'application/json' } };
-    const { data } = await axios.post('/api/auth/login', { email, password }, config);
+    const { data } = await axios.post(API + '/auth/login', { email, password }, config);
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
     localStorage.setItem('userInfo', JSON.stringify(data));
   } catch (error) {
@@ -30,7 +32,7 @@ export const register = (name, email, password, gender, college, mobile) => asyn
     dispatch({ type: USER_REGISTER_REQUEST });
     const config = { headers: { 'Content-Type': 'application/json' } };
     const { data } = await axios.post(
-      '/api/auth/register',
+      API + '/auth/register',
       { name, email, password, gender, college, mobile },
       config
     );
@@ -50,7 +52,7 @@ export const getUserDetails = () => async (dispatch, getState) => {
     dispatch({ type: USER_DETAILS_REQUEST });
     const { userLogin: { userInfo } } = getState();
     const config = { headers: { Authorization: 'Bearer ' + userInfo.token } };
-    const { data } = await axios.get('/api/auth/profile', config);
+    const { data } = await axios.get(API + '/auth/profile', config);
     dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({
@@ -69,7 +71,7 @@ export const updateProfile = (name, email, gender, college, mobile) => async (di
     },
   };
   try {
-    const { data } = await axios.put('/api/auth/profile', { name, email, gender, college, mobile }, config);
+    const { data } = await axios.put(API + '/auth/profile', { name, email, gender, college, mobile }, config);
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
     localStorage.setItem('userInfo', JSON.stringify(data));
     return data;
@@ -87,7 +89,7 @@ export const changePassword = (currentPassword, newPassword) => async (dispatch,
     },
   };
   try {
-    const { data } = await axios.put('/api/auth/change-password', { currentPassword, newPassword }, config);
+    const { data } = await axios.put(API + '/auth/change-password', { currentPassword, newPassword }, config);
     return data;
   } catch (error) {
     throw error.response && error.response.data.message ? error.response.data.message : error.message;

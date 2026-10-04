@@ -4,6 +4,8 @@ import { Table, Button, Row, Col, Alert, Container, Modal, Form, Badge } from 'r
 import toast from 'react-hot-toast';
 import axios from 'axios';
 
+const API = (import.meta.env.VITE_API_URL || '') + '/api';
+
 const AdminDashboard = () => {
   const [stats, setStats] = useState({});
   const [users, setUsers] = useState([]);
@@ -23,9 +25,9 @@ const AdminDashboard = () => {
       setLoading(true);
       const config = { headers: { Authorization: 'Bearer ' + userInfo.token } };
       const [s, u, e] = await Promise.all([
-        axios.get('/api/admin/stats', config),
-        axios.get('/api/admin/users', config),
-        axios.get('/api/admin/exams', config),
+        axios.get(API + '/admin/stats', config),
+        axios.get(API + '/admin/users', config),
+        axios.get(API + '/admin/exams', config),
       ]);
       setStats(s.data); setUsers(u.data); setExams(e.data);
       setLoading(false);
@@ -39,7 +41,7 @@ const AdminDashboard = () => {
     if (window.confirm('Delete user "' + name + '"?')) {
       try {
         const config = { headers: { Authorization: 'Bearer ' + userInfo.token } };
-        await axios.delete('/api/admin/users/' + id, config);
+        await axios.delete(API + '/admin/users/' + id, config);
         toast.success('User deleted');
         fetchData();
       } catch (err) {
@@ -53,7 +55,7 @@ const AdminDashboard = () => {
   const handleEditSave = async () => {
     try {
       const config = { headers: { Authorization: 'Bearer ' + userInfo.token } };
-      await axios.put('/api/admin/users/' + editUser._id, editUser, config);
+      await axios.put(API + '/admin/users/' + editUser._id, editUser, config);
       toast.success('User updated');
       setShowModal(false);
       fetchData();
